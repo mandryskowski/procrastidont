@@ -90,6 +90,7 @@
                 dp.events.add(event);
             },
             onHeaderClick: args => {
+				console.log("lol");
                 console.log("args", args);
 				<?php 
 				$host = "localhost";
@@ -101,7 +102,7 @@
 
 				if (mysqli_connect_errno())
 				{
-					console.log("Could not connect to DB");
+					;//console.log("Could not connect to DB");
 				}
 				else
 				{
