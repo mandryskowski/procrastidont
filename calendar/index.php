@@ -108,8 +108,8 @@
 				{
 					
 					mysqli_select_db($myDB, $database);
-					mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
-					(99, 'rxadvasde', '1999-01-01', '1999-01-02');");
+					//mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
+					//(99, 'rxadvasde', '1999-01-01', '1999-01-02');");
 					mysqli_close($myDB);
 					
 					//echo("Successfully initialised DB");
