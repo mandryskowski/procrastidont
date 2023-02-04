@@ -28,6 +28,37 @@
 
     <script type="text/javascript">
 	$(document).ready(function() {
+		function updateEventDB(text, color, start, end, oldID = "") {
+				$.ajax({
+				type: "POST",
+				url: 'server/eventadd.php',
+				dataType: 'text',
+				data: {evid: DayPilot.guid().toString(), name: text, barColor: color, start: start.toString("yyyy-MM-dd HH:mm:ss"), end: end.toString("yyyy-MM-dd HH:mm:ss"), oldid: oldID},
+
+				success: function (obj, textstatus) {
+							  console.log(obj);
+						},
+				error: function (jqXHR, exception) {
+				var msg = '';
+				if (jqXHR.status === 0) {
+					msg = 'Not connect.\n Verify Network.';
+				} else if (jqXHR.status == 404) {
+					msg = 'Requested page not found. [404]';
+				} else if (jqXHR.status == 500) {
+					msg = 'Internal Server Error [500].';
+				} else if (exception === 'parsererror') {
+					msg = 'Requested JSON parse failed.';
+				} else if (exception === 'timeout') {
+					msg = 'Time out error.';
+				} else if (exception === 'abort') {
+					msg = 'Ajax request aborted.';
+				} else {
+					msg = 'Uncaught Error.\n' + jqXHR.responseText;
+				}
+				console.log(msg);
+				}});
+		}
+		
         const dp = new DayPilot.Calendar("dp", {
             viewType: "Week",
             startDate: "2022-03-21",
@@ -55,7 +86,8 @@
                 }
 
                 dp.events.update(modal.result);
-
+				console.log(modal.result);
+				updateEventDB(modal.result.text, modal.result.barColor, modal.result.start, modal.result.end, args.e.cache.id);
             },
             onBeforeEventRender: args => {
                 args.data.barBackColor = "transparent";
@@ -88,48 +120,21 @@
                     barColor: "#3c78d8"
                 };
 				
+				console.log(args.end.toString());
+				
                 dp.events.add(event);
 				
-								$.ajax({
-				type: "POST",
-				url: 'server/eventadd.php',
-				dataType: 'text',
-				data: {name: event.text, start: args.start.toString("yyyy-MM-dd hh:mm:ss"), end: args.end.toString("yyyy-MM-dd hh:mm:ss")},
-
-				success: function (obj, textstatus) {
-							  console.log(obj);
-						},
-				error: function (jqXHR, exception) {
-				var msg = '';
-				if (jqXHR.status === 0) {
-					msg = 'Not connect.\n Verify Network.';
-				} else if (jqXHR.status == 404) {
-					msg = 'Requested page not found. [404]';
-				} else if (jqXHR.status == 500) {
-					msg = 'Internal Server Error [500].';
-				} else if (exception === 'parsererror') {
-					msg = 'Requested JSON parse failed.';
-				} else if (exception === 'timeout') {
-					msg = 'Time out error.';
-				} else if (exception === 'abort') {
-					msg = 'Ajax request aborted.';
-				} else {
-					msg = 'Uncaught Error.\n' + jqXHR.responseText;
-				}
-				console.log(msg);
-				}});
+				updateEventDB(event.text, event.barColor, args.start, args.end);
             },
             onHeaderClick: args => {
 				console.log("lol");
                 console.log("args", args);
-            },
-			onEventMoved: args => {
-				console.log("event moved");
-			}
+            }
         });
 		
 		dp.onEventMoved = function(args) {
-		console.log("Moved: " + args.e.text());
+		console.log(args);
+		console.log("Moved: " + args.e.cache.id);
 		<?php 
 		$host = "localhost";
 		$username = "root";
@@ -146,31 +151,53 @@
 		{
 			//console.log("Successfully connected to DB");
 			
-			mysqli_query($myDB, "DROP DATABASE IF EXISTS `dbCalendar`;");
-			mysqli_query($myDB, "CREATE DATABASE `dbCalendar`;");
+			//mysqli_query($myDB, "DROP DATABASE IF EXISTS `dbCalendar`;");
+			mysqli_query($myDB, "CREATE DATABASE IF NOT EXISTS `dbCalendar`;");
 			
 			mysqli_select_db($myDB, $database);
 			
-			mysqli_query($myDB, "CREATE TABLE `tblCalendar` (
-		  `evID` int NOT NULL,
+			mysqli_query($myDB, "CREATE TABLE IF NOT EXISTS `tblCalendar` (
+		  `evID` varchar(255) NOT NULL,
 		  `name` varchar(255) NOT NULL,
+		  `barColor` varchar(16) NOT NULL,
 		  `start` datetime NOT NULL,
 		  `end` datetime NOT NULL,
 		   PRIMARY KEY (`evID`));"
 			);
 			
-			mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
-		(1, 'rave', '1999-01-01 01:05:03', '1999-01-02');");
-		mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
-		(2, 'raveee', '1999-01-01', '1999-01-02');");
+		//	mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
+		//(1, 'rave', '1999-01-01 01:05:03', '1999-01-02');");
+		//mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
+		//(2, 'raveee', '1999-01-01', '1999-01-02');");
 
 			mysqli_close($myDB);
 			
 			//echo("Successfully initialised DB");
 		}
 		?>
+		console.log(args);
+		updateEventDB(args.e.cache.text, args.e.cache.barColor, args.newStart, args.newEnd, args.e.cache.id);
 		};
+		
+		
+		dp.eventDeleteHandling = "Update";
+		dp.onEventDelete = function (e) {
+			console.log(e.e.cache.id);
+				
+								$.ajax({
+				type: "POST",
+				url: 'server/eventremove.php',
+				dataType: 'text',
+				data: {evid: e.e.cache.id},
 
+				success: function (obj, textstatus) {
+							  console.log(obj);
+						},
+				error: function (jqXHR, exception) {
+				console.log(jqHXR.status);
+				}});
+		};
+		
         dp.init();
 		
 		const events = [<?php 
@@ -191,21 +218,16 @@
 				$results = mysqli_query($myDB, "SELECT * FROM `tblCalendar`;");
 				while ($row = mysqli_fetch_array($results, MYSQLI_ASSOC))
 				{
-					//echo "start: new DayPilot.Date(\"2022-03-24T12:00:00\"),"
-					//."end: new DayPilot.Date(\"2022-03-24T16:00:00\"),"
-					//."id: " .$row['evID'] .","
-					//."text: \"" .$row['name'] ."\","
-					//."barColor: \"#cc0000\"";
-					echo "{start: \"2022-03-24T12:00:00\","
-					."end: \"2022-03-24T16:00:00\","
-					."id: " .$row['evID'] .","
+					echo "{start: \"" .$row['start'] ."\","
+					."end: \"" .$row['end'] ."\","
+					."id: \"" .$row['evID'] ."\","
 					."text: \"" .$row['name'] ."\","
-					."barColor: \"#cc0000\"},";
+					."barColor: \"" .$row['barColor'] ."\"},";
 				}
 				mysqli_close($myDB);
 		}
 		?>];
-		console.log({events});
+		console.log(events);
         dp.update({events});
 	});
     </script>

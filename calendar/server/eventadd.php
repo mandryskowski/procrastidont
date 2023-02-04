@@ -13,11 +13,17 @@ if (mysqli_connect_errno())
 else
 {
 	echo "Connected to DB";
-	echo $_POST['start'];
+	echo "Deleting " .$_POST['oldid'];
+	echo "Creating " .$_POST['evid'];
+	
 	
 	mysqli_select_db($myDB, $database);
-	mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
-		(3, '" .$_POST['name'] ."', '".$_POST['start'] ."', '" .$_POST['end'] ."');");
+	
+	if( isset($_POST['oldid']) ) {
+		mysqli_query($myDB, "DELETE FROM `tblcalendar` WHERE `evID` = '" .$_POST['oldid'] ."';");
+	}
+	mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `barColor`, `start`, `end`) VALUES
+		('" .$_POST['evid'] ."', '" .$_POST['name'] ."', '" .$_POST['barColor'] ."', '".$_POST['start'] ."', '" .$_POST['end'] ."');");
 	mysqli_close($myDB);
 	
 	//echo("Successfully initialised DB");
