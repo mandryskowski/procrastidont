@@ -27,7 +27,6 @@
     <div id="dp"></div>
 
     <script type="text/javascript">
-
         const dp = new DayPilot.Calendar("dp", {
             viewType: "Week",
             startDate: "2022-03-21",
@@ -80,52 +79,127 @@
                 if (modal.canceled) {
                     return;
                 }
-
-                dp.events.add({
+				
+				const event = {
                     start: args.start,
                     end: args.end,
                     id: DayPilot.guid(),
                     text: modal.result.text,
                     barColor: "#3c78d8"
-                });
+                };
+				
+                dp.events.add(event);
+				
+				<?php 
+					$host = "localhost";
+					$username = "root";
+					$passwd = "";
+					$database = "dbCalendar";
+
+					$myDB = mysqli_connect($host, $username, $passwd);
+
+					if (mysqli_connect_errno())
+					{
+						console.log("Could not connect to DB");
+					}
+					else
+					{
+			
+						mysqli_select_db($myDB, $database);
+						mysqli_query($myDB, "INSERT INTO tblCalendar (evID, name, start, end) VALUES
+					(2, 'rave2', '2022-03-23', '2022-03-23');");
+
+						mysqli_close($myDB);
+						
+						//echo("Successfully initialised DB");
+					}
+				?>
+				
             },
             onHeaderClick: args => {
                 console.log("args", args);
-            }
+            },
+			onEventMoved: args => {
+				console.log("event moved");
+			}
         });
+		
+		dp.onEventMoved = function(args) {
+		console.log("Moved: " + args.e.text());
+		<?php 
+		$host = "localhost";
+		$username = "root";
+		$passwd = "";
+		$database = "dbCalendar";
+
+		$myDB = mysqli_connect($host, $username, $passwd);
+
+		if (mysqli_connect_errno())
+		{
+			;//console.log("Could not connect to DB");
+		}
+		else
+		{
+			//console.log("Successfully connected to DB");
+			
+			mysqli_query($myDB, "DROP DATABASE IF EXISTS `dbCalendar`;");
+			mysqli_query($myDB, "CREATE DATABASE `dbCalendar`;");
+			
+			mysqli_select_db($myDB, $database);
+			
+			mysqli_query($myDB, "CREATE TABLE `tblCalendar` (
+		  `evID` int NOT NULL,
+		  `name` varchar(255) NOT NULL,
+		  `start` date NOT NULL,
+		  `end` date NOT NULL,
+		   PRIMARY KEY (`evID`));"
+			);
+			
+			mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
+		(1, 'rave', '1999-01-01', '1999-01-02');");
+
+			mysqli_close($myDB);
+			
+			//echo("Successfully initialised DB");
+		}
+		?>
+		};
 
         dp.init();
+		
+		const events = [{<?php 
+			$host = "localhost";
+			$username = "root";
+			$passwd = "";
+			$database = "dbCalendar";
 
-        const events = [
-            {
-                start: "2022-03-21T11:00:00",
-                end: "2022-03-21T14:00:00",
-                id: 1,
-                text: "Event 1",
-                barColor: "#3c78d8"
-            },
-            {
-                start: "2022-03-22T12:00:00",
-                end: "2022-03-22T15:00:00",
-                id: 2,
-                text: "Event 2",
-                barColor: "#6aa84f"
-            },
-            {
-                start: "2022-03-23T10:00:00",
-                end: "2022-03-23T15:00:00",
-                id: 3,
-                text: "Event 3",
-                barColor: "#f1c232"
-            },
-            {
-                start: "2022-03-24T12:00:00",
-                end: "2022-03-24T16:00:00",
-                id: 4,
-                text: "Event 4",
-                barColor: "#cc0000"
-            },
-        ];
+			$myDB = mysqli_connect($host, $username, $passwd);
+
+			if (mysqli_connect_errno())
+			{
+				;//console.log("Could not connect to DB");
+			}
+			else
+			{
+				mysqli_select_db($myDB, $database);
+				$results = mysqli_query($myDB, "SELECT * FROM `tblCalendar`;");
+				while ($row = mysqli_fetch_array($results, MYSQLI_ASSOC))
+				{
+					//echo "start: new DayPilot.Date(\"2022-03-24T12:00:00\"),"
+					//."end: new DayPilot.Date(\"2022-03-24T16:00:00\"),"
+					//."id: " .$row['evID'] .","
+					//."text: \"" .$row['name'] ."\","
+					//."barColor: \"#cc0000\"";
+					echo "start: \"2022-03-24T12:00:00\","
+					."end: \"2022-03-24T16:00:00\","
+					."id: " .$row['evID'] .","
+					."text: \"" .$row['name'] ."\","
+					."barColor: \"#cc0000\"";
+				}
+				mysqli_close($myDB);
+		}
+		?>},];
+		console.log({events});
         dp.update({events});
 
     </script>
