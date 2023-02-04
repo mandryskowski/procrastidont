@@ -63,8 +63,7 @@
                 }
             },
             onTimeRangeSelected: async args => {
-
-                const form = [
+				const form = [
                     {name: "Name", id: "text"}
                 ];
 
@@ -89,35 +88,32 @@
                 };
 				
                 dp.events.add(event);
-				
-				<?php 
-					$host = "localhost";
-					$username = "root";
-					$passwd = "";
-					$database = "dbCalendar";
-
-					$myDB = mysqli_connect($host, $username, $passwd);
-
-					if (mysqli_connect_errno())
-					{
-						console.log("Could not connect to DB");
-					}
-					else
-					{
-			
-						mysqli_select_db($myDB, $database);
-						mysqli_query($myDB, "INSERT INTO tblCalendar (evID, name, start, end) VALUES
-					(2, 'rave2', '2022-03-23', '2022-03-23');");
-
-						mysqli_close($myDB);
-						
-						//echo("Successfully initialised DB");
-					}
-				?>
-				
             },
             onHeaderClick: args => {
                 console.log("args", args);
+				<?php 
+				$host = "localhost";
+				$username = "root";
+				$passwd = "";
+				$database = "dbCalendar";
+
+				$myDB = mysqli_connect($host, $username, $passwd);
+
+				if (mysqli_connect_errno())
+				{
+					console.log("Could not connect to DB");
+				}
+				else
+				{
+					
+					mysqli_select_db($myDB, $database);
+					mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
+					(3, 'rxadvasde', '1999-01-01', '1999-01-02');");
+					mysqli_close($myDB);
+					
+					//echo("Successfully initialised DB");
+				}
+				?>
             },
 			onEventMoved: args => {
 				console.log("event moved");
@@ -157,6 +153,8 @@
 			
 			mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
 		(1, 'rave', '1999-01-01', '1999-01-02');");
+		mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
+		(2, 'raveee', '1999-01-01', '1999-01-02');");
 
 			mysqli_close($myDB);
 			
@@ -167,7 +165,7 @@
 
         dp.init();
 		
-		const events = [{<?php 
+		const events = [<?php 
 			$host = "localhost";
 			$username = "root";
 			$passwd = "";
@@ -190,15 +188,15 @@
 					//."id: " .$row['evID'] .","
 					//."text: \"" .$row['name'] ."\","
 					//."barColor: \"#cc0000\"";
-					echo "start: \"2022-03-24T12:00:00\","
+					echo "{start: \"2022-03-24T12:00:00\","
 					."end: \"2022-03-24T16:00:00\","
 					."id: " .$row['evID'] .","
 					."text: \"" .$row['name'] ."\","
-					."barColor: \"#cc0000\"";
+					."barColor: \"#cc0000\"},";
 				}
 				mysqli_close($myDB);
 		}
-		?>},];
+		?>];
 		console.log({events});
         dp.update({events});
 
