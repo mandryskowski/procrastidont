@@ -13,10 +13,11 @@ if (mysqli_connect_errno())
 else
 {
 	echo "Connected to DB";
+	echo $_POST['start'];
 	
 	mysqli_select_db($myDB, $database);
 	mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
-		(3, 'megarave', '1999-01-01', '1999-01-02');");
+		(3, '" .$_POST['name'] ."', '".$_POST['start'] ."', '" .$_POST['end'] ."');");
 	mysqli_close($myDB);
 	
 	//echo("Successfully initialised DB");

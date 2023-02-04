@@ -94,7 +94,7 @@
 				type: "POST",
 				url: 'server/eventadd.php',
 				dataType: 'text',
-				data: {name: "party"},
+				data: {name: event.text, start: args.start.toString("yyyy-MM-dd hh:mm:ss"), end: args.end.toString("yyyy-MM-dd hh:mm:ss")},
 
 				success: function (obj, textstatus) {
 							  console.log(obj);
@@ -154,13 +154,13 @@
 			mysqli_query($myDB, "CREATE TABLE `tblCalendar` (
 		  `evID` int NOT NULL,
 		  `name` varchar(255) NOT NULL,
-		  `start` date NOT NULL,
-		  `end` date NOT NULL,
+		  `start` datetime NOT NULL,
+		  `end` datetime NOT NULL,
 		   PRIMARY KEY (`evID`));"
 			);
 			
 			mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
-		(1, 'rave', '1999-01-01', '1999-01-02');");
+		(1, 'rave', '1999-01-01 01:05:03', '1999-01-02');");
 		mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
 		(2, 'raveee', '1999-01-01', '1999-01-02');");
 
