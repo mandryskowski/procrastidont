@@ -89,15 +89,12 @@
                 };
 				
                 dp.events.add(event);
-            },
-            onHeaderClick: args => {
-				console.log("lol");
-                console.log("args", args);
-				$.ajax({
+				
+								$.ajax({
 				type: "POST",
 				url: 'server/eventadd.php',
 				dataType: 'text',
-				data: {functionname: 'add', arguments: [1, 2]},
+				data: {name: "party"},
 
 				success: function (obj, textstatus) {
 							  console.log(obj);
@@ -121,7 +118,10 @@
 				}
 				console.log(msg);
 				}});
-			console.log("ajax called");
+            },
+            onHeaderClick: args => {
+				console.log("lol");
+                console.log("args", args);
             },
 			onEventMoved: args => {
 				console.log("event moved");
