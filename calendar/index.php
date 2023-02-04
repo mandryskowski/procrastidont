@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Open-Source JavaScript Event Calendar</title>
-
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <!-- head -->
     <meta charset="utf-8"/>
     <meta name="referrer" content="no-referrer-when-downgrade"/>
@@ -27,6 +27,7 @@
     <div id="dp"></div>
 
     <script type="text/javascript">
+	$(document).ready(function() {
         const dp = new DayPilot.Calendar("dp", {
             viewType: "Week",
             startDate: "2022-03-21",
@@ -92,29 +93,35 @@
             onHeaderClick: args => {
 				console.log("lol");
                 console.log("args", args);
-				<?php 
-				$host = "localhost";
-				$username = "root";
-				$passwd = "";
-				$database = "dbCalendar";
+				$.ajax({
+				type: "POST",
+				url: 'server/eventadd.php',
+				dataType: 'text',
+				data: {functionname: 'add', arguments: [1, 2]},
 
-				$myDB = mysqli_connect($host, $username, $passwd);
-
-				if (mysqli_connect_errno())
-				{
-					;//console.log("Could not connect to DB");
+				success: function (obj, textstatus) {
+							  console.log(obj);
+						},
+				error: function (jqXHR, exception) {
+				var msg = '';
+				if (jqXHR.status === 0) {
+					msg = 'Not connect.\n Verify Network.';
+				} else if (jqXHR.status == 404) {
+					msg = 'Requested page not found. [404]';
+				} else if (jqXHR.status == 500) {
+					msg = 'Internal Server Error [500].';
+				} else if (exception === 'parsererror') {
+					msg = 'Requested JSON parse failed.';
+				} else if (exception === 'timeout') {
+					msg = 'Time out error.';
+				} else if (exception === 'abort') {
+					msg = 'Ajax request aborted.';
+				} else {
+					msg = 'Uncaught Error.\n' + jqXHR.responseText;
 				}
-				else
-				{
-					
-					//mysqli_select_db($myDB, $database);
-					//mysqli_query($myDB, "INSERT INTO `tblCalendar` (`evID`, `name`, `start`, `end`) VALUES
-					//(99, 'rxadvasde', '1999-01-01', '1999-01-02');");
-					mysqli_close($myDB);
-					
-					//echo("Successfully initialised DB");
-				}
-				?>
+				console.log(msg);
+				}});
+			console.log("ajax called");
             },
 			onEventMoved: args => {
 				console.log("event moved");
@@ -200,7 +207,7 @@
 		?>];
 		console.log({events});
         dp.update({events});
-
+	});
     </script>
 
     <!-- bottom -->
